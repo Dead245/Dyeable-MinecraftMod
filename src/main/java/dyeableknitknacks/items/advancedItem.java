@@ -8,8 +8,12 @@ import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.TooltipFlag;
 import net.minecraft.world.item.context.UseOnContext;
 import net.minecraft.world.level.Level;
+import org.jetbrains.annotations.Nullable;
+
+import java.util.List;
 
 public class advancedItem extends Item {
     public advancedItem(Properties properties) {
@@ -19,8 +23,9 @@ public class advancedItem extends Item {
     //Open item GUI/change dye
     @Override
     public InteractionResultHolder<ItemStack> use(Level lvl, Player plyr, InteractionHand intrHand) {
-        plyr.sendSystemMessage(Component.literal("Testing Right Click Functionality..."));
-
+        if(!lvl.isClientSide){
+            plyr.sendSystemMessage(Component.literal("Testing Right Click Functionality..."));
+        }
         return super.use(lvl, plyr, intrHand);
     }
 
@@ -35,5 +40,12 @@ public class advancedItem extends Item {
     public InteractionResult interactLivingEntity(ItemStack itemStack, Player plyr, LivingEntity liveEntity, InteractionHand intrHand) {
         return super.interactLivingEntity(itemStack, plyr, liveEntity, intrHand);
 
+    }
+
+    //Tooltip
+    @Override
+    public void appendHoverText(ItemStack itemStack, @Nullable Level lvl, List<Component> compList, TooltipFlag tooltipFlag) {
+        super.appendHoverText(itemStack, lvl, compList, tooltipFlag);
+        compList.add(Component.literal("This should be a tooltip..."));
     }
 }
