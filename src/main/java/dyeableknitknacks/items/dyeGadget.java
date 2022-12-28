@@ -42,16 +42,6 @@ public class dyeGadget extends Item {
         return super.use(lvl, plyr, intrHand);
     }
 
-    @Override
-    public InteractionResult useOn(UseOnContext useContext) {
-        //BlockPos lookPos = useContext.getClickedPos();
-        //BlockState blkState = useContext.getLevel().getBlockState(lookPos);
-        //Block blkType = blkState.getBlock();
-        //useContext.getPlayer().sendSystemMessage(Component.literal("Clicked on " + blkType.toString()));
-
-        return super.useOn(useContext);
-    }
-
     //Change dye of entity(sheep)
     @Override
     public InteractionResult interactLivingEntity(ItemStack itemStack, Player plyr, LivingEntity liveEntity, InteractionHand intrHand) {
