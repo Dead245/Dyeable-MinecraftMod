@@ -15,8 +15,8 @@ import org.jetbrains.annotations.Nullable;
 
 import java.util.List;
 
-public class advancedItem extends Item {
-    public advancedItem(Properties properties) {
+public class dyeGadget extends Item {
+    public dyeGadget(Properties properties) {
         super(properties);
     }
 
@@ -24,7 +24,7 @@ public class advancedItem extends Item {
     @Override
     public InteractionResultHolder<ItemStack> use(Level lvl, Player plyr, InteractionHand intrHand) {
         if(!lvl.isClientSide){
-            plyr.sendSystemMessage(Component.literal("Testing Right Click Functionality..."));
+            plyr.sendSystemMessage(Component.literal("Right clicked with Dye Gadget..."));
         }
         return super.use(lvl, plyr, intrHand);
     }
@@ -46,6 +46,6 @@ public class advancedItem extends Item {
     @Override
     public void appendHoverText(ItemStack itemStack, @Nullable Level lvl, List<Component> compList, TooltipFlag tooltipFlag) {
         super.appendHoverText(itemStack, lvl, compList, tooltipFlag);
-        compList.add(Component.literal("This should be a tooltip..."));
+        compList.add(Component.literal("Gadget for dyes..."));
     }
 }

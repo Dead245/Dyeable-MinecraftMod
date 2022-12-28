@@ -1,6 +1,6 @@
 {
   "parent": "minecraft:item/generated",
   "textures": {
-      "layer0": "dyeableknitknacks:items/advanced_item"
+      "layer0": "dyeableknitknacks:items/dye_gadget"
   }
 }
