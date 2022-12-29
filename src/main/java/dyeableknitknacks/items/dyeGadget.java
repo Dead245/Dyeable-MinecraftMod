@@ -10,12 +10,10 @@ import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.TooltipFlag;
-import net.minecraft.world.item.context.UseOnContext;
 import net.minecraft.world.level.ClipContext;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.Blocks;
-import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.phys.BlockHitResult;
 import org.jetbrains.annotations.Nullable;
 
@@ -26,13 +24,15 @@ public class dyeGadget extends Item {
         super(properties);
     }
 
+
     //Open item GUI/change dye | Change dye of block?
     @Override
     public InteractionResultHolder<ItemStack> use(Level lvl, Player plyr, InteractionHand intrHand) {
-        BlockHitResult ray = getPlayerPOVHitResult(lvl,plyr, ClipContext.Fluid.NONE);
-        BlockPos lookPos = ray.getBlockPos();
-        Block blkType = lvl.getBlockState(lookPos).getBlock();
         if(!lvl.isClientSide){
+            BlockHitResult ray = getPlayerPOVHitResult(lvl,plyr, ClipContext.Fluid.NONE);
+            BlockPos lookPos = ray.getBlockPos();
+            Block blkType = lvl.getBlockState(lookPos).getBlock();
+
             if(blkType == Blocks.AIR){
                 plyr.sendSystemMessage(Component.literal("Right clicked in the air."));
             } else{
@@ -45,9 +45,8 @@ public class dyeGadget extends Item {
     //Change dye of entity(sheep)
     @Override
     public InteractionResult interactLivingEntity(ItemStack itemStack, Player plyr, LivingEntity liveEntity, InteractionHand intrHand) {
-        plyr.sendSystemMessage(Component.literal("Right clicked an entity."));
+        plyr.sendSystemMessage(Component.literal("Right clicked a " + liveEntity.getName().getString()));
         return super.interactLivingEntity(itemStack, plyr, liveEntity, intrHand);
-
     }
 
     //Tooltip
@@ -56,4 +55,5 @@ public class dyeGadget extends Item {
         super.appendHoverText(itemStack, lvl, compList, tooltipFlag);
         compList.add(Component.literal("Gadget for dyes..."));
     }
+
 }
