@@ -25,15 +25,21 @@ public class dyeGadget extends Item {
         super(properties);
     }
 
-    int entityID = -1;
-    String[] colors = { "WHITE","ORANGE","MAGENTA","LIGHT_BLUE",
-                        "YELLOW","LIME","PINK","GRAY",
-                        "LIGHT_GREY","CYAN","PURPLE","BLUE",
-                        "BROWN","GREEN","RED","BLACK" };
+    //The 16 colors used for dyeable blocks (swapped light_grey and grey for easier searchability)
+    String[] colors = { "white","orange","magenta","light_blue",
+                        "yellow","lime","pink","light_gray",
+                        "gray","cyan","purple","blue",
+                        "brown","green","red","black" };
+
+    //Filter for finding the names of blocks that are dyed.
+    String[] blockFilter = {"_concrete","_terracotta","_wool",
+                            "_candle","stained_glass","_carpet"};
     @Override
     public InteractionResult useOn(UseOnContext p_41427_) {
         return super.useOn(p_41427_);
     }
+
+    int entityID = -1;
 
     //Open item GUI/change dye | Change dye of block |  Change dye of entity (sheep)
     @Override
@@ -49,15 +55,57 @@ public class dyeGadget extends Item {
                 //IS BLOCK
                 String blockName = blkType.getDescriptionId().substring(blkType.getDescriptionId().lastIndexOf('.') + 1);
                 plyr.sendSystemMessage(Component.literal("Right clicked on Block: " + blockName ));
+                int filterIndex, colorIndex;
+                String blockColor = null;
 
-                if(blockName.contains("_concrete") ||
-                   blockName.contains("_terracotta") ||
-                   blockName.contains("_wool") ||
-                   blockName.contains("_candle") ||
-                   blockName.contains("stained_glass") ||
-                   blockName.contains("_carpet")) {
-
-                    plyr.sendSystemMessage(Component.literal("IS DYEABLE BLOCK"));
+                //----- Gets Block Type
+                for(filterIndex = 0; filterIndex < blockFilter.length; filterIndex++) {
+                    if(blockName.contains(blockFilter[filterIndex])){
+                        //----- Gets blockColor if blockName contains something in blockFilter
+                        for(colorIndex = 0; colorIndex < colors.length; colorIndex++){
+                            if(blockName.contains(colors[colorIndex])){
+                                blockColor = colors[colorIndex];
+                                break;
+                            }
+                        }
+                        plyr.sendSystemMessage(Component.literal("Color: " + blockColor ));
+                        break;
+                    }
+                }
+                switch(filterIndex) {
+                    case 0: //Concrete / Concrete Powder
+                        if(blockName.contains("powder")){
+                            plyr.sendSystemMessage(Component.literal("IS DYEABLE CONCRETE POWDER"));
+                            break;
+                        }
+                        plyr.sendSystemMessage(Component.literal("IS DYEABLE CONCRETE"));
+                        break;
+                    case 1: //Terracotta / Glazed Terracotta
+                        if(blockName.contains("glazed")){
+                            plyr.sendSystemMessage(Component.literal("IS DYEABLE GLAZED TERRACOTTA"));
+                            break;
+                        }
+                        plyr.sendSystemMessage(Component.literal("IS DYEABLE TERRACOTTA"));
+                        break;
+                    case 2: //Wool
+                        plyr.sendSystemMessage(Component.literal("IS DYEABLE WOOL"));
+                        break;
+                    case 3: //Candle
+                        plyr.sendSystemMessage(Component.literal("IS DYEABLE CANDLE"));
+                        break;
+                    case 4: //Stained Glass / Stained Glass Pane
+                        if(blockName.contains("pane")){
+                            plyr.sendSystemMessage(Component.literal("IS DYEABLE GLASS PANE"));
+                            break;
+                        }
+                        plyr.sendSystemMessage(Component.literal("IS DYEABLE GLASS"));
+                        break;
+                    case 5: //Carpet
+                        if(blockName.equals("moss_carpet")) break; //moss carpet exception
+                        plyr.sendSystemMessage(Component.literal("IS DYEABLE CARPET"));
+                        break;
+                    default: //Not Dyeable
+                        break;
                 }
             }
         } else if (!lvl.isClientSide && entityID >= 0) {
