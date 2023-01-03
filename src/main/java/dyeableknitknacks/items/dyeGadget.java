@@ -25,10 +25,10 @@ public class dyeGadget extends Item {
         super(properties);
     }
 
-    //The 16 colors used for dyeable blocks (swapped light_grey and grey for easier searchability)
+    //The 16 colors used for dyeable blocks
     String[] colors = { "white","orange","magenta","light_blue",
-                        "yellow","lime","pink","light_gray",
-                        "gray","cyan","purple","blue",
+                        "yellow","lime","pink","gray",
+                        "light_gray","cyan","purple","blue",
                         "brown","green","red","black" };
 
     //Filter for finding the names of blocks that are dyed.
@@ -49,64 +49,12 @@ public class dyeGadget extends Item {
             BlockPos lookPos = ray.getBlockPos();
             Block blkType = lvl.getBlockState(lookPos).getBlock();
             if(blkType == Blocks.AIR){
-                //IS NOTHING
+                //IS NOTHING - SET DYE COLOR HERE
                 plyr.sendSystemMessage(Component.literal("Right clicked in the air."));
             } else{
                 //IS BLOCK
                 String blockName = blkType.getDescriptionId().substring(blkType.getDescriptionId().lastIndexOf('.') + 1);
-                plyr.sendSystemMessage(Component.literal("Right clicked on Block: " + blockName ));
-                int filterIndex, colorIndex;
-                String blockColor = null;
-
-                //----- Gets Block Type
-                for(filterIndex = 0; filterIndex < blockFilter.length; filterIndex++) {
-                    if(blockName.contains(blockFilter[filterIndex])){
-                        //----- Gets blockColor if blockName contains something in blockFilter
-                        for(colorIndex = 0; colorIndex < colors.length; colorIndex++){
-                            if(blockName.contains(colors[colorIndex])){
-                                blockColor = colors[colorIndex];
-                                break;
-                            }
-                        }
-                        plyr.sendSystemMessage(Component.literal("Color: " + blockColor ));
-                        break;
-                    }
-                }
-                switch(filterIndex) {
-                    case 0: //Concrete / Concrete Powder
-                        if(blockName.contains("powder")){
-                            plyr.sendSystemMessage(Component.literal("IS DYEABLE CONCRETE POWDER"));
-                            break;
-                        }
-                        plyr.sendSystemMessage(Component.literal("IS DYEABLE CONCRETE"));
-                        break;
-                    case 1: //Terracotta / Glazed Terracotta
-                        if(blockName.contains("glazed")){
-                            plyr.sendSystemMessage(Component.literal("IS DYEABLE GLAZED TERRACOTTA"));
-                            break;
-                        }
-                        plyr.sendSystemMessage(Component.literal("IS DYEABLE TERRACOTTA"));
-                        break;
-                    case 2: //Wool
-                        plyr.sendSystemMessage(Component.literal("IS DYEABLE WOOL"));
-                        break;
-                    case 3: //Candle
-                        plyr.sendSystemMessage(Component.literal("IS DYEABLE CANDLE"));
-                        break;
-                    case 4: //Stained Glass / Stained Glass Pane
-                        if(blockName.contains("pane")){
-                            plyr.sendSystemMessage(Component.literal("IS DYEABLE GLASS PANE"));
-                            break;
-                        }
-                        plyr.sendSystemMessage(Component.literal("IS DYEABLE GLASS"));
-                        break;
-                    case 5: //Carpet
-                        if(blockName.equals("moss_carpet")) break; //moss carpet exception
-                        plyr.sendSystemMessage(Component.literal("IS DYEABLE CARPET"));
-                        break;
-                    default: //Not Dyeable
-                        break;
-                }
+                checkAndSetBlock(lvl,lookPos,blockName);
             }
         } else if (!lvl.isClientSide && entityID >= 0) {
             //IS ENTITY
@@ -130,6 +78,54 @@ public class dyeGadget extends Item {
     public void appendHoverText(ItemStack itemStack, @Nullable Level lvl, List<Component> compList, TooltipFlag tooltipFlag) {
         super.appendHoverText(itemStack, lvl, compList, tooltipFlag);
         compList.add(Component.literal("Gadget for dyes..."));
+    }
+
+    void checkAndSetBlock(Level lvl, BlockPos blockPos, String blockName){
+        int filterIndex;
+
+        //----- Gets Block Type
+        for(filterIndex = 0; filterIndex < blockFilter.length; filterIndex++) {
+            if(blockName.contains(blockFilter[filterIndex])){
+                break;
+            }
+        }
+        switch(filterIndex) {
+            case 0: //Concrete / Concrete Powder
+                if(blockName.contains("powder")){
+                    lvl.setBlockAndUpdate(blockPos, Blocks.ORANGE_CONCRETE_POWDER.defaultBlockState());
+                    break;
+                }
+                lvl.setBlockAndUpdate(blockPos, Blocks.ORANGE_CONCRETE.defaultBlockState());
+                break;
+            case 1: //Terracotta / Glazed Terracotta
+                if(blockName.contains("glazed")){
+                    lvl.setBlockAndUpdate(blockPos, Blocks.ORANGE_GLAZED_TERRACOTTA.defaultBlockState());
+                    break;
+                }
+                lvl.setBlockAndUpdate(blockPos, Blocks.ORANGE_TERRACOTTA.defaultBlockState());
+                break;
+            case 2: //Wool
+                lvl.setBlockAndUpdate(blockPos, Blocks.ORANGE_WOOL.defaultBlockState());
+                break;
+            case 3: //Candle
+                //Amount and lit tags aren't updated
+                lvl.setBlockAndUpdate(blockPos, Blocks.ORANGE_CANDLE.defaultBlockState());
+                break;
+            case 4: //Stained Glass / Stained Glass Pane
+                if(blockName.contains("pane")){
+                    //sides aren't updated
+                    lvl.setBlockAndUpdate(blockPos, Blocks.ORANGE_STAINED_GLASS_PANE.defaultBlockState());
+                    break;
+                }
+                lvl.setBlockAndUpdate(blockPos, Blocks.ORANGE_STAINED_GLASS.defaultBlockState());
+                break;
+            case 5: //Carpet
+                if(blockName.equals("moss_carpet")) break; //moss carpet exception
+                lvl.setBlockAndUpdate(blockPos, Blocks.ORANGE_CARPET.defaultBlockState());
+                break;
+            default: //Not Dyeable
+                break;
+        }
     }
 
 }
