@@ -1,15 +1,17 @@
 package dyeableknitknacks.items;
 
+import com.google.common.collect.Maps;
 import net.minecraft.core.BlockPos;
 import net.minecraft.network.chat.Component;
+import net.minecraft.sounds.SoundEvents;
+import net.minecraft.sounds.SoundSource;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResult;
 import net.minecraft.world.InteractionResultHolder;
 import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.entity.animal.Sheep;
 import net.minecraft.world.entity.player.Player;
-import net.minecraft.world.item.Item;
-import net.minecraft.world.item.ItemStack;
-import net.minecraft.world.item.TooltipFlag;
+import net.minecraft.world.item.*;
 import net.minecraft.world.item.context.UseOnContext;
 import net.minecraft.world.level.ClipContext;
 import net.minecraft.world.level.Level;
@@ -18,18 +20,16 @@ import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.phys.BlockHitResult;
 import org.jetbrains.annotations.Nullable;
 
+import java.awt.*;
 import java.util.List;
+import java.util.Map;
 
 public class dyeGadget extends Item {
     public dyeGadget(Properties properties) {
         super(properties);
     }
-
-    //The 16 colors used for dyeable blocks
-    String[] colors = { "white","orange","magenta","light_blue",
-                        "yellow","lime","pink","gray",
-                        "light_gray","cyan","purple","blue",
-                        "brown","green","red","black" };
+    private int dyeID = 0;
+    private DyeColor dyeColor = DyeColor.byId(dyeID);
 
     //Filter for finding the names of blocks that are dyed.
     String[] blockFilter = {"_concrete","_terracotta","_wool",
@@ -50,7 +50,11 @@ public class dyeGadget extends Item {
             Block blkType = lvl.getBlockState(lookPos).getBlock();
             if(blkType == Blocks.AIR){
                 //IS NOTHING - SET DYE COLOR HERE
-                plyr.sendSystemMessage(Component.literal("Right clicked in the air."));
+                dyeID++;
+                dyeColor = DyeColor.byId(dyeID);
+                if(dyeID != dyeColor.getId()){ //byID will automatically set ID > max length to 0
+                    dyeID = 0;
+                }
             } else{
                 //IS BLOCK
                 String blockName = blkType.getDescriptionId().substring(blkType.getDescriptionId().lastIndexOf('.') + 1);
@@ -60,6 +64,14 @@ public class dyeGadget extends Item {
             //IS ENTITY
             LivingEntity liveEnt = (LivingEntity) lvl.getEntity(entityID); //easier to get entity name through LivingEntity???
             plyr.sendSystemMessage(Component.literal("Right clicked on Entity: " + liveEnt.getName().getString()));
+            //Mostly copied from DyeItem.java
+            if (liveEnt instanceof Sheep sheep) {
+                if (sheep.isAlive() && !sheep.isSheared() && sheep.getColor() != this.dyeColor) {
+                    sheep.level.playSound(plyr, sheep, SoundEvents.DYE_USE, SoundSource.PLAYERS, 1.0F, 1.0F);
+                    sheep.setColor(this.dyeColor);
+                }
+            }
+
         }
         entityID = -1; //basically null?
         return super.use(lvl, plyr, intrHand);
