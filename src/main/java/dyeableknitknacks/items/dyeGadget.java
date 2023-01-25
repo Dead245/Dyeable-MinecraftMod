@@ -82,43 +82,48 @@ public class dyeGadget extends Item {
 
     int entityID = -1;
 
-    //Open item GUI/change dye | Change dye of block |  Change dye of entity (sheep)
+    //Change color | Change dye of block |  Change dye of entity (sheep)
     @Override
     public InteractionResultHolder<ItemStack> use(Level lvl, Player plyr, InteractionHand intrHand) {
-        if(!lvl.isClientSide && entityID < 0){
+        if(entityID < 0){
             BlockHitResult ray = getPlayerPOVHitResult(lvl,plyr, ClipContext.Fluid.NONE);
             BlockPos lookPos = ray.getBlockPos();
             Block blkType = lvl.getBlockState(lookPos).getBlock();
             if(blkType == Blocks.AIR){
-                //IS NOTHING - SET DYE COLOR HERE
+                //----- IS NOTHING - SET DYE COLOR HERE
                 dyeID++;
                 dyeColor = DyeColor.byId(dyeID);
                 if(dyeID != dyeColor.getId()){ //byID will automatically set ID > max length to 0
                     dyeID = 0;
                 }
-                plyr.sendSystemMessage(Component.literal("Color: " + dyeColor.getName()));
+
+                if(!lvl.isClientSide){
+                    plyr.sendSystemMessage(Component.literal("Color: " + dyeColor.getName()));
+                }
             } else{
-                //IS BLOCK
+                //----- IS BLOCK
                 String blockName = blkType.getDescriptionId().substring(blkType.getDescriptionId().lastIndexOf('.') + 1);
                 checkAndSetBlock(lvl,lookPos,blockName);
+                lvl.playSound(plyr, lookPos, SoundEvents.DYE_USE, SoundSource.PLAYERS,1.0f,1.0f);
             }
-        } else if (!lvl.isClientSide && entityID >= 0) {
-            //IS ENTITY
+        } else if (entityID >= 0) {
+            //----- IS ENTITY
             LivingEntity liveEnt = (LivingEntity) lvl.getEntity(entityID);
             //Mostly copied from DyeItem.java
             if (liveEnt instanceof Sheep sheep) {
                 if (sheep.isAlive() && !sheep.isSheared() && sheep.getColor() != this.dyeColor) {
                     sheep.level.playSound(plyr, sheep, SoundEvents.DYE_USE, SoundSource.PLAYERS, 1.0F, 1.0F);
-                    sheep.setColor(this.dyeColor);
+                    if(!lvl.isClientSide){
+                        sheep.setColor(this.dyeColor);
+                    }
                 }
             }
-
         }
         entityID = -1; //basically null?
         return super.use(lvl, plyr, intrHand);
     }
 
-    //Get ID of entity when right-clicked on
+    //----- Get ID of entity when right-clicked on
     @Override
     public InteractionResult interactLivingEntity(ItemStack itemStack, Player plyr, LivingEntity liveEntity, InteractionHand intrHand) {
         entityID = liveEntity.getId();
