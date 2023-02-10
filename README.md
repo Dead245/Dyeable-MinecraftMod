@@ -1,4 +1,4 @@
-# Dyeable-Minecraft Mod
+# Dyeable-Minecraft Mod (1.19)
  Wip Minecraft mod that allows an easier time dyeing items.
  
 ## Current Addition/s
