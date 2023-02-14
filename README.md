@@ -17,5 +17,3 @@
     - Glass Pane
     - Candle
  - Right click sheep to dye it to the selected dye color.
- 
-  > <i>Note: Currently Glass Panes and Candles do not transfer their tags over correctly.</i>
