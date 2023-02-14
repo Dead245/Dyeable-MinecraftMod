@@ -1,11 +1,16 @@
 # Dyeable-Minecraft Mod (1.19)
- Wip Minecraft mod that allows an easier time dyeing items.
- 
+ Minecraft mod that allows an easier time dyeing items.
+
 ## Current Addition/s
 <b>Dye Gadget -</b>
-- <i>Currently only available through Creative Menu</i>
- - Right click the air to change dye color
- - Right click dyeable block to change its color to the selected dye color.
+
+ <p align="center">
+<img alt="Recipe for the Dye Gadget" src="images/DyeGadgetRecipe.png"><br><i>
+Can use any dye in the crafting recipe</i>
+</p>
+
+ - Right click in the air to change dye color
+ - Right click dyed block to change its color to the selected dye color.
   - Current Blocks:
     - Wool
     - Carpet
