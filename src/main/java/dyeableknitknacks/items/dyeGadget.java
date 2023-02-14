@@ -17,6 +17,7 @@ import net.minecraft.world.level.ClipContext;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.Blocks;
+import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.material.MaterialColor;
 import net.minecraft.world.phys.BlockHitResult;
 import org.jetbrains.annotations.Nullable;
@@ -135,11 +136,13 @@ public class dyeGadget extends Item {
     @Override
     public void appendHoverText(ItemStack itemStack, @Nullable Level lvl, List<Component> compList, TooltipFlag tooltipFlag) {
         super.appendHoverText(itemStack, lvl, compList, tooltipFlag);
-        compList.add(Component.literal("Gadget for dyes..."));
+        compList.add(Component.literal("Current Color: " + DyeColor.byId(dyeID)));
     }
 
     void checkAndSetBlock(Level lvl, BlockPos blockPos, String blockName){
         int filterIndex;
+
+        BlockState blkState; //For use for blocks with tags that need to be transferred over after dyeing.
 
         //----- Gets Block Type
         for(filterIndex = 0; filterIndex < blockFilter.length; filterIndex++) {
@@ -165,14 +168,14 @@ public class dyeGadget extends Item {
             case 2: //Wool
                 lvl.setBlockAndUpdate(blockPos, woolList[dyeID].defaultBlockState());
                 break;
-            case 3: //Candle
-                //Amount and lit tags aren't updated!!!!!!!!!!
-                lvl.setBlockAndUpdate(blockPos, candleList[dyeID].defaultBlockState());
+            case 3: //Candle -- Note: Still extinguishes the candle if it was lit
+                blkState = lvl.getBlockState(blockPos);
+                lvl.setBlockAndUpdate(blockPos, candleList[dyeID].withPropertiesOf(blkState));
                 break;
             case 4: //Stained Glass / Stained Glass Pane
                 if(blockName.contains("pane")){
-                    //sides aren't updated yet!!!!!!!!!!
-                    lvl.setBlockAndUpdate(blockPos, glassPaneList[dyeID].defaultBlockState());
+                    blkState = lvl.getBlockState(blockPos);
+                    lvl.setBlockAndUpdate(blockPos, glassPaneList[dyeID].withPropertiesOf(blkState));
                     break;
                 }
                 lvl.setBlockAndUpdate(blockPos, glassList[dyeID].defaultBlockState());
